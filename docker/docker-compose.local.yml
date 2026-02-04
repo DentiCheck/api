@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: denticheck-mysql-local
+    environment:
+      MYSQL_DATABASE: denticheck
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: denticheck-api-local
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=denticheck
+      - DB_USERNAME=admin
+      - DB_PASSWORD=admin_password
+    depends_on:
+      - db
