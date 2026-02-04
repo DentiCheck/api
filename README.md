@@ -4,7 +4,7 @@
 
 ## 기술 스택
 - Java 17
-- Spring Boot 3.2.x
+- Spring Boot 3.5.x
 - Spring Data JPA + QueryDSL
 - GraphQL
 - PostgreSQL 15
