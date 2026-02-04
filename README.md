@@ -7,7 +7,7 @@
 - Spring Boot 3.2.x
 - Spring Data JPA + QueryDSL
 - GraphQL
-- MySQL 8.0
+- PostgreSQL 15
 - Flyway (DB Migration)
 - Docker & Docker Compose
 
