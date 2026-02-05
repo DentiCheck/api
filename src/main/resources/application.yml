@@ -1,6 +1,7 @@
 spring:
   profiles:
     active: local
+    include: oauth
   graphql:
     graphiql:
       enabled: true

@@ -3,6 +3,8 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/resources/application.yml
 !**/src/main/resources/application-*.yml
+### OAuth ###
+!/src/main/resources/application-oauth.yml
 
 .env
 .DS_Store
