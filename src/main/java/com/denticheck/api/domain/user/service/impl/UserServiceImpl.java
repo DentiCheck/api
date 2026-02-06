@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.AccessDeniedException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +29,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public Long updateUser(UserRequestDTO dto) throws AccessDeniedException {
-
         // 본인만 수정 가능 검증
         String sessionUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         if (!sessionUsername.equals(dto.getUsername())) {
@@ -44,6 +44,7 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.save(entity).getId();
     }
+
 
     // 소셜 로그인 회원 탈퇴
     @Transactional
@@ -68,7 +69,6 @@ public class UserServiceImpl implements UserService {
         jwtServiceImpl.removeRefreshUser(dto.getUsername());
     }
 
-    // 소셜 유저 정보 조회
     @Transactional(readOnly = true)
     @Override
     public UserResponseDTO readUser() {
@@ -78,6 +78,23 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다: " + username));
 
         return new UserResponseDTO(entity.getNickname(), entity.getEmail());
+    }
+
+    // 소셜 유저 정보 조회
+    @Transactional(readOnly = true)
+    @Override
+    public Optional<UserEntity> findUser(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    @Override
+    public Boolean existsUser(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    @Override
+    public Long mobileCreateUser(UserEntity userEntity) {
+        return 0L;
     }
 
 }

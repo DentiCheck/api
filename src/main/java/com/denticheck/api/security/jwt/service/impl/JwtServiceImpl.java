@@ -10,6 +10,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,12 +21,18 @@ public class JwtServiceImpl implements JwtService {
     private final RefreshRepository refreshRepository;
     private final JWTUtil jwtUtil;
 
+    @Value("${admin.web.refresh-cookie-max-age-seconds}")
+    int refreshCookieMaxAgeSeconds;
+
+    @Value("${admin.web.refresh-cookie-secure}")
+    boolean refreshCookieSecure;
+
     // 소셜 로그인 성공 후 쿠키(Refresh) -> 헤더 방식으로 응답
     @Transactional
     @Override
     public JWTResponseDTO cookie2Header(HttpServletRequest request, HttpServletResponse response) {
 
-        // 쿠키 리스트
+        // 쿠키 리스트에서 Refresh 쿠키 확인
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
             throw new RuntimeException("쿠키가 존재하지 않습니다.");
@@ -72,9 +79,9 @@ public class JwtServiceImpl implements JwtService {
         // 기존 쿠키 제거
         Cookie refreshCookie = new Cookie("refreshToken", null);
         refreshCookie.setHttpOnly(true);
-        refreshCookie.setSecure(false);
+        refreshCookie.setSecure(refreshCookieSecure);
         refreshCookie.setPath("/");
-        refreshCookie.setMaxAge(0);
+        refreshCookie.setMaxAge(refreshCookieMaxAgeSeconds);
         response.addCookie(refreshCookie);
 
         return new JWTResponseDTO(newAccessToken, newRefreshToken);

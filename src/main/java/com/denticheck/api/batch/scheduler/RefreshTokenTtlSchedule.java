@@ -1,4 +1,4 @@
-package com.denticheck.api.config;
+package com.denticheck.api.batch.scheduler;
 
 import com.denticheck.api.security.jwt.repository.RefreshRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
-public class ScheduleConfig {
+public class RefreshTokenTtlSchedule {
 
     private final RefreshRepository refreshRepository;
 
