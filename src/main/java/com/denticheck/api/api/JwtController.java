@@ -2,7 +2,7 @@ package com.denticheck.api.api;
 
 import com.denticheck.api.security.jwt.dto.JWTResponseDTO;
 import com.denticheck.api.security.jwt.dto.RefreshRequestDTO;
-import com.denticheck.api.security.jwt.service.JwtService;
+import com.denticheck.api.security.jwt.service.impl.JwtServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class JwtController {
 
-    private final JwtService jwtService;
+    private final JwtServiceImpl jwtServiceImpl;
 
     // 소셜 로그인 쿠키 방식의 Refresh 토큰 헤더 방식으로 교환
     @PostMapping(value = "/jwt/exchange", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -24,7 +24,7 @@ public class JwtController {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        return jwtService.cookie2Header(request, response);
+        return jwtServiceImpl.cookie2Header(request, response);
     }
 
     // Refresh 토큰으로 Access 토큰 재발급 (Rotate 포함)
@@ -32,6 +32,6 @@ public class JwtController {
     public JWTResponseDTO jwtRefreshApi(
             @Validated @RequestBody RefreshRequestDTO dto
     ) {
-        return jwtService.refreshRotate(dto);
+        return jwtServiceImpl.refreshRotate(dto);
     }
 }

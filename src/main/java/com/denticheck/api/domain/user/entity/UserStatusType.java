@@ -3,15 +3,15 @@ package com.denticheck.api.domain.user.entity;
 import lombok.Getter;
 
 @Getter
-public enum SocialProviderType {
-
-    NAVER("네이버"),
-    GOOGLE("구글"),
-    APPLE("애플");
+public enum UserStatusType {
+    ACTIVE("정상"),
+    DORMANT("휴면"),
+    SUSPENDED("정지"),
+    WITHDRAWN("탈퇴");
 
     private final String description;
 
-    SocialProviderType(String description) {
+    UserStatusType(String description) {
         this.description = description;
     }
 }

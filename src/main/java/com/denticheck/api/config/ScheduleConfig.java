@@ -13,7 +13,7 @@ public class ScheduleConfig {
 
     private final RefreshRepository refreshRepository;
 
-    // Refresh 토큰 저장소 8일 지난 토큰 삭제
+    // Refresh 토큰 저장소 매일 03시 8일 지난 토큰 삭제
     @Scheduled(cron = "0 0 3 * * *")
     public void refreshEntityTtlSchedule() {
         LocalDateTime cutoff = LocalDateTime.now().minusDays(8);

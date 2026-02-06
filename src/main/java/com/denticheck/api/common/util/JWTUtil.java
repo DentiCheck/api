@@ -3,51 +3,60 @@ package com.denticheck.api.common.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
+@Component
 public class JWTUtil {
 
-    private static final SecretKey secretKey;
-    private static final Long accessTokenExpiresIn;
-    private static final Long refreshTokenExpiresIn;
+    private final SecretKey secretKey;
+    private final Long accessTokenExpiresIn;
+    private final Long refreshTokenExpiresIn;
 
-    static  {
-        String secretKeyString = "himynameiskimjihunmyyoutubechann";
-        secretKey = new SecretKeySpec(secretKeyString.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
+    public JWTUtil(
+            @Value("${jwt.secret-key}") String secretKeyString,
+            @Value("${jwt.accessTokenExpiresIn}") Long accessTokenExpiresIn,
+            @Value("${jwt.refreshTokenExpiresIn}") Long refreshTokenExpiresIn
+    ) {
+        this.secretKey = new SecretKeySpec(secretKeyString.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
+        this.accessTokenExpiresIn = accessTokenExpiresIn;
+        this.refreshTokenExpiresIn = refreshTokenExpiresIn;
+    }
 
-        accessTokenExpiresIn = 3600L * 1000; // 1시간
-//        accessTokenExpiresIn = 50L * 1000; // 50초(테스트용)
-        refreshTokenExpiresIn = 604800L * 1000; // 7일
+    public Claims parseClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     // JWT 클레임 username 파싱
-    public static String getUsername(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("sub", String.class);
+    public String getUsername(String token) {
+        return parseClaims(token).getSubject();
     }
 
     // JWT 클레임 role 파싱
-    public static String getRole(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
+    public String getRole(String token) {
+        return parseClaims(token).get("role", String.class);
     }
 
     // JWT 유효 여부 (위조, 시간, Access/Refresh 여부)
-    public static Boolean isValid(String token, Boolean isAccess) {
+    public Boolean isValid(String token, Boolean isAccess) {
         try {
-            Claims claims = Jwts.parser()
-                    .verifyWith(secretKey)
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
+            Claims claims = parseClaims(token);
 
             String type = claims.get("type", String.class);
             if (type == null) return false;
 
-            if (isAccess && !type.equals("access")) return false;
-            if (!isAccess && !type.equals("refresh")) return false;
+            if (isAccess && !"access".equals(type)) return false;
+            if (!isAccess && !"refresh".equals(type)) return false;
 
             return true;
 
@@ -56,15 +65,22 @@ public class JWTUtil {
         }
     }
 
-    // JWT(Access/Refresh) 생성
-    public static String createJWT(String username, String role, Boolean isAccess) {
+    public String createAccessJWT(String username, String role) {
+        return createJWT(username, role, true);
+    }
 
+    public String createRefreshJWT(String username, String role) {
+        return createJWT(username, role, false);
+    }
+
+    // JWT(Access/Refresh) 생성
+    public String createJWT(String username, String role, Boolean isAccess) {
         long now = System.currentTimeMillis();
         long expiry = isAccess ? accessTokenExpiresIn : refreshTokenExpiresIn;
         String type = isAccess ? "access" : "refresh";
 
         return Jwts.builder()
-                .claim("sub", username)
+                .subject(username)
                 .claim("role", role)
                 .claim("type", type)
                 .issuedAt(new Date(now))

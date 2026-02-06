@@ -8,6 +8,12 @@ spring:
     schema:
       printer:
         enabled: true
+jwt:
+  secret-key: himynameiskimjihunmyyoutubechann
+  # 1시간 (ms)
+  accessTokenExpiresIn: 3600000
+  # 7일 (ms)
+  refreshTokenExpiresIn: 604800000
 
 logging:
   level:

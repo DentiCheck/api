@@ -1,7 +1,7 @@
 package com.denticheck.api.security.jwt.handler;
 
 import com.denticheck.api.common.util.JWTUtil;
-import com.denticheck.api.security.jwt.service.JwtService;
+import com.denticheck.api.security.jwt.service.impl.JwtServiceImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +18,8 @@ import java.io.InputStreamReader;
 @RequiredArgsConstructor
 public class RefreshTokenLogoutHandler implements LogoutHandler {
 
-    private final JwtService jwtService;
+    private final JwtServiceImpl jwtServiceImpl;
+    private final JWTUtil jwtUtil;
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
@@ -33,16 +34,11 @@ public class RefreshTokenLogoutHandler implements LogoutHandler {
             String refreshToken = jsonNode.has("refreshToken") ? jsonNode.get("refreshToken").asText() : null;
 
             // 유효성 검증
-            if (refreshToken == null) {
-                return;
-            }
-            Boolean isValid = JWTUtil.isValid(refreshToken, false);
-            if (!isValid) {
-                return;
-            }
+            if (refreshToken == null) return;
+            if (!jwtUtil.isValid(refreshToken, false)) return;
 
             // Refresh 토큰 삭제
-            jwtService.removeRefresh(refreshToken);
+            jwtServiceImpl.removeRefresh(refreshToken);
 
         } catch (IOException e) {
             throw new RuntimeException("Failed to read refresh token", e);

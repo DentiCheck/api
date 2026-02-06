@@ -27,17 +27,12 @@ public class UserEntity {
     @Column(name = "username", unique = true, nullable = false, updatable = false)
     private String username;
 
-    @Column(name = "password", nullable = false)
-    private String password;
-
-    @Column(name = "is_lock", nullable = false)
-    private Boolean isLock;
-
-    @Column(name = "is_social", nullable = false)
-    private Boolean isSocial;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private UserStatusType userStatusType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "social_provider_type")
+    @Column(name = "signup_provider")
     private SocialProviderType socialProviderType;
 
     @Enumerated(EnumType.STRING)
