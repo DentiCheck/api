@@ -38,7 +38,6 @@ public class SecurityConfig {
 
     public SecurityConfig(
             @Qualifier("SocialSuccessHandler") AuthenticationSuccessHandler socialSuccessHandler,
-
             JWTFilter jwtFilter) {
         this.socialSuccessHandler = socialSuccessHandler;
 
@@ -93,10 +92,12 @@ public class SecurityConfig {
                         .addLogoutHandler(refreshTokenLogoutHandler))
                 // OAuth2 인증용
                 .oauth2Login(oauth2 -> oauth2
-                        .successHandler(socialSuccessHandler))
+                        .successHandler(socialSuccessHandler)
+                        // application-oauth.yml의 redirect-uri와 일치시켜야 함
+                        .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*")))
                 // 인가
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/oauth2/**", "/login/**").permitAll()
+                        .requestMatchers("/oauth2/**", "/oauth2/callback/**").permitAll()
                         .requestMatchers("/auth/mobile/google").permitAll() // 모바일 네이티브 로그인
                         .requestMatchers("/jwt/exchange", "/jwt/refresh").permitAll()
                         .requestMatchers("/graphql", "/graphiql").hasRole(UserRoleType.USER.name())

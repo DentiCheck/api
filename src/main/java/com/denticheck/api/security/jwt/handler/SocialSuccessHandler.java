@@ -32,10 +32,11 @@ public class SocialSuccessHandler implements AuthenticationSuccessHandler {
     private boolean refreshCookieSecure;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+            Authentication authentication) throws IOException {
 
         // username, role
-        String username =  authentication.getName();
+        String username = authentication.getName();
         String role = authentication.getAuthorities().iterator().next().getAuthority();
 
         // JWT(Refresh) 발급
