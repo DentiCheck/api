@@ -3,7 +3,6 @@ package com.denticheck.api.common.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -22,9 +21,9 @@ public class JWTUtil {
     public JWTUtil(
             @Value("${jwt.secret-key}") String secretKeyString,
             @Value("${jwt.accessTokenExpiresIn}") Long accessTokenExpiresIn,
-            @Value("${jwt.refreshTokenExpiresIn}") Long refreshTokenExpiresIn
-    ) {
-        this.secretKey = new SecretKeySpec(secretKeyString.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
+            @Value("${jwt.refreshTokenExpiresIn}") Long refreshTokenExpiresIn) {
+        this.secretKey = new SecretKeySpec(secretKeyString.getBytes(StandardCharsets.UTF_8),
+                Jwts.SIG.HS256.key().build().getAlgorithm());
         this.accessTokenExpiresIn = accessTokenExpiresIn;
         this.refreshTokenExpiresIn = refreshTokenExpiresIn;
     }
@@ -53,10 +52,13 @@ public class JWTUtil {
             Claims claims = parseClaims(token);
 
             String type = claims.get("type", String.class);
-            if (type == null) return false;
+            if (type == null)
+                return false;
 
-            if (isAccess && !"access".equals(type)) return false;
-            if (!isAccess && !"refresh".equals(type)) return false;
+            if (isAccess && !"access".equals(type))
+                return false;
+            if (!isAccess && !"refresh".equals(type))
+                return false;
 
             return true;
 

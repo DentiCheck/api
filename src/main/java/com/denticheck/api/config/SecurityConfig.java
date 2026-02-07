@@ -37,10 +37,9 @@ public class SecurityConfig {
     private final JWTFilter jwtFilter;
 
     public SecurityConfig(
-                          @Qualifier("SocialSuccessHandler") AuthenticationSuccessHandler socialSuccessHandler,
-                          JwtServiceImpl jwtServiceImpl,
-                          JWTFilter jwtFilter
-    ) {
+            @Qualifier("SocialSuccessHandler") AuthenticationSuccessHandler socialSuccessHandler,
+            JwtServiceImpl jwtServiceImpl,
+            JWTFilter jwtFilter) {
         this.socialSuccessHandler = socialSuccessHandler;
         this.jwtServiceImpl = jwtServiceImpl;
         this.jwtFilter = jwtFilter;
@@ -61,7 +60,7 @@ public class SecurityConfig {
         configuration.setAllowedOriginPatterns(List.of(
                 "http://localhost:5173", // TODO: 관리자 웹 운영 도메인으로 변경
                 "http://localhost:8080",
-                "exp://*",  // RN(Expo) 사용 시 케이스
+                "exp://*", // RN(Expo) 사용 시 케이스
                 "http://10.0.2.2:*" // 안드로이드 에뮬레이터
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
@@ -77,7 +76,8 @@ public class SecurityConfig {
 
     // SecurityFilterChain
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, RefreshTokenLogoutHandler refreshTokenLogoutHandler) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+            RefreshTokenLogoutHandler refreshTokenLogoutHandler) throws Exception {
         http
                 // CSRF 보안 필터 disable
                 .csrf(AbstractHttpConfigurer::disable)
@@ -101,8 +101,7 @@ public class SecurityConfig {
                         .requestMatchers("/jwt/exchange", "/jwt/refresh").permitAll()
                         .requestMatchers("/graphql", "/graphiql").hasRole(UserRoleType.USER.name())
                         .requestMatchers("/admin/**").hasRole(UserRoleType.ADMIN.name())
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 // 예외 처리
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint((request, response, authException) -> {
@@ -110,8 +109,7 @@ public class SecurityConfig {
                         })
                         .accessDeniedHandler((request, response, authException) -> {
                             response.sendError(HttpServletResponse.SC_FORBIDDEN); // 403 응답
-                        })
-                )
+                        }))
                 // 커스텀 필터 추가
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

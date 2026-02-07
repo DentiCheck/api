@@ -1,7 +1,6 @@
 package com.denticheck.api.security.user.service.impl;
 
 import com.denticheck.api.config.GoogleMobileProperties;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Service;
@@ -16,10 +15,10 @@ public class MobileIdTokenVerifierService {
 
     public MobileIdTokenVerifierService(
             JwtDecoder idTokenDecoder,
-            GoogleMobileProperties props
-    ) {
+            GoogleMobileProperties props) {
         this.idTokenDecoder = idTokenDecoder;
-        this.allowedAudiences = props.getAllowedAudiences();;
+        this.allowedAudiences = props.getAllowedAudiences();
+
         // TODO: 운영전환시 삭제(또는 유지하되 메시지만 개선)
         if (allowedAudiences == null || allowedAudiences.isEmpty()) {
             throw new IllegalStateException("google.mobile.allowed-audiences 설정이 필요합니다.");

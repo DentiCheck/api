@@ -1,4 +1,4 @@
-package com.denticheck.api.api;
+package com.denticheck.api.controller;
 
 import com.denticheck.api.security.jwt.dto.JWTResponseDTO;
 import com.denticheck.api.security.user.dto.MobileLoginRequest;

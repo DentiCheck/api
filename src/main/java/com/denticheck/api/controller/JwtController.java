@@ -1,4 +1,4 @@
-package com.denticheck.api.api;
+package com.denticheck.api.controller;
 
 import com.denticheck.api.security.jwt.dto.JWTResponseDTO;
 import com.denticheck.api.security.jwt.dto.RefreshRequestDTO;
@@ -22,16 +22,14 @@ public class JwtController {
     @PostMapping(value = "/jwt/exchange", consumes = MediaType.APPLICATION_JSON_VALUE)
     public JWTResponseDTO jwtExchangeApi(
             HttpServletRequest request,
-            HttpServletResponse response
-    ) {
+            HttpServletResponse response) {
         return jwtServiceImpl.cookie2Header(request, response);
     }
 
     // Refresh 토큰으로 Access 토큰 재발급 (Rotate 포함)
     @PostMapping(value = "/jwt/refresh", consumes = MediaType.APPLICATION_JSON_VALUE)
     public JWTResponseDTO jwtRefreshApi(
-            @Validated @RequestBody RefreshRequestDTO dto
-    ) {
+            @Validated @RequestBody RefreshRequestDTO dto) {
         return jwtServiceImpl.refreshRotate(dto);
     }
 }

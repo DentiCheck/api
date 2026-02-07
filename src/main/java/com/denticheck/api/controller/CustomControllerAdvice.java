@@ -1,4 +1,4 @@
-package com.denticheck.api.api;
+package com.denticheck.api.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
