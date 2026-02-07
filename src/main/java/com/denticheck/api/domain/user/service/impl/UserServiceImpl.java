@@ -2,6 +2,7 @@ package com.denticheck.api.domain.user.service.impl;
 
 import com.denticheck.api.domain.user.dto.UserRequestDTO;
 import com.denticheck.api.domain.user.dto.UserResponseDTO;
+import com.denticheck.api.domain.user.entity.SocialProviderType;
 import com.denticheck.api.domain.user.entity.UserEntity;
 import com.denticheck.api.domain.user.entity.UserRoleType;
 import com.denticheck.api.domain.user.entity.UserStatusType;
@@ -9,6 +10,8 @@ import com.denticheck.api.domain.user.repository.UserRepository;
 import com.denticheck.api.domain.user.service.UserService;
 import com.denticheck.api.security.jwt.service.impl.JwtServiceImpl;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.AccessDeniedException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -45,7 +49,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(entity).getId();
     }
 
-
     // 소셜 로그인 회원 탈퇴
     @Transactional
     @Override
@@ -56,7 +59,7 @@ public class UserServiceImpl implements UserService {
         String sessionRole = context.getAuthentication().getAuthorities().iterator().next().getAuthority();
 
         boolean isOwner = sessionUsername.equals(dto.getUsername());
-        boolean isAdmin = sessionRole.equals("ROLE_"+ UserRoleType.ADMIN.name());
+        boolean isAdmin = sessionRole.equals("ROLE_" + UserRoleType.ADMIN.name());
 
         if (!isOwner && !isAdmin) {
             throw new AccessDeniedException("본인 혹은 관리자만 삭제할 수 있습니다.");
@@ -92,9 +95,39 @@ public class UserServiceImpl implements UserService {
         return userRepository.existsByUsername(username);
     }
 
-    @Override
-    public Long mobileCreateUser(UserEntity userEntity) {
-        return 0L;
-    }
+    @Value("${app.auth.admin-emails}")
+    private List<String> adminEmails;
 
+    @Transactional
+    public UserEntity getOrCreateUser(SocialProviderType providerType, String providerId, String email,
+            String nickname) {
+        String username = providerType.name() + "_" + providerId;
+
+        return userRepository.findByUsername(username)
+                .map(entity -> {
+                    // 기존 유저 정보 업데이트
+                    UserRequestDTO dto = new UserRequestDTO();
+                    dto.setEmail(email);
+                    dto.setNickname(nickname);
+                    entity.updateUser(dto);
+                    return entity;
+                })
+                .orElseGet(() -> {
+                    // 신규 유저 생성
+                    UserRoleType role = UserRoleType.USER;
+                    if (email != null && adminEmails != null && adminEmails.contains(email)) {
+                        role = UserRoleType.ADMIN;
+                    }
+
+                    UserEntity newUser = UserEntity.builder()
+                            .username(username)
+                            .userStatusType(UserStatusType.ACTIVE)
+                            .socialProviderType(providerType)
+                            .roleType(role)
+                            .nickname(nickname)
+                            .email(email)
+                            .build();
+                    return userRepository.save(newUser);
+                });
+    }
 }

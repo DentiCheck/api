@@ -33,15 +33,15 @@ import java.util.List;
 public class SecurityConfig {
 
     private final AuthenticationSuccessHandler socialSuccessHandler;
-    private final JwtServiceImpl jwtServiceImpl;
+
     private final JWTFilter jwtFilter;
 
     public SecurityConfig(
             @Qualifier("SocialSuccessHandler") AuthenticationSuccessHandler socialSuccessHandler,
-            JwtServiceImpl jwtServiceImpl,
+
             JWTFilter jwtFilter) {
         this.socialSuccessHandler = socialSuccessHandler;
-        this.jwtServiceImpl = jwtServiceImpl;
+
         this.jwtFilter = jwtFilter;
     }
 
