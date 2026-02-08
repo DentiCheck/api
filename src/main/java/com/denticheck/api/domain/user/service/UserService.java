@@ -7,9 +7,10 @@ import com.denticheck.api.domain.user.entity.UserEntity;
 
 import java.nio.file.AccessDeniedException;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface UserService {
-    Long updateUser(UserRequestDTO dto) throws AccessDeniedException;
+    UUID updateUser(UserRequestDTO dto) throws AccessDeniedException;
 
     void deleteUser(UserRequestDTO dto) throws AccessDeniedException;
 

@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +33,7 @@ public class UserServiceImpl implements UserService {
     // 회원 정보 수정
     @Transactional
     @Override
-    public Long updateUser(UserRequestDTO dto) throws AccessDeniedException {
+    public UUID updateUser(UserRequestDTO dto) throws AccessDeniedException {
         // 본인만 수정 가능 검증
         String sessionUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         if (!sessionUsername.equals(dto.getUsername())) {

@@ -7,11 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Builder
 @Getter
@@ -23,15 +25,18 @@ import java.time.LocalDateTime;
 public class UserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", nullable = false)
+    private UUID id;
 
     @Column(name = "username", unique = true, nullable = false, updatable = false)
     private String username;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private UserStatusType userStatusType;
+    @ColumnDefault("'ACTIVE'")
+    @Builder.Default
+    private UserStatusType userStatusType = UserStatusType.ACTIVE;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "signup_provider")
@@ -47,13 +52,19 @@ public class UserEntity {
     @Column(name = "email")
     private String email;
 
+    @Column(name = "phone", length = 20)
+    private String phone;
+
+    @Column(name = "withdrawn_at")
+    private LocalDateTime withdrawnAt;
+
     @CreatedDate
-    @Column(name = "created_date", updatable = false)
-    private LocalDateTime createdDate;
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(name = "updated_date")
-    private LocalDateTime updatedDate;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     public void updateUser(UserRequestDTO dto) {
         this.email = dto.getEmail();
