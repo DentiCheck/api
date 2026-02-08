@@ -11,7 +11,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./pg_data:/var/lib/postgresql/data
+      - denticheck_db_data:/var/lib/postgresql/data
 
   api:
     build:
@@ -29,3 +29,6 @@ services:
       - DB_PASSWORD=admin_password
     depends_on:
       - db
+
+volumes:
+  denticheck_db_data:
