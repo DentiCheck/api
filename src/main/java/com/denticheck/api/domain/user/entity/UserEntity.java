@@ -42,9 +42,9 @@ public class UserEntity {
     @Column(name = "signup_provider")
     private SocialProviderType socialProviderType;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role_type", nullable = false)
-    private UserRoleType roleType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id")
+    private RoleEntity role;
 
     @Column(name = "nickname")
     private String nickname;

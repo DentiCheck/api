@@ -39,7 +39,8 @@ public class MobileAuthService {
                 email,
                 nickname);
 
-        String role = "ROLE_" + user.getRoleType().name();
+        String roleName = user.getRole() != null ? user.getRole().getName() : "USER";
+        String role = "ROLE_" + roleName;
 
         String accessToken = jwtUtil.createAccessJWT(user.getUsername(), role);
         String refreshToken = jwtUtil.createRefreshJWT(user.getUsername(), role);

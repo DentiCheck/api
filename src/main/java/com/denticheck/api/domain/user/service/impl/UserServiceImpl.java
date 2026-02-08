@@ -2,10 +2,12 @@ package com.denticheck.api.domain.user.service.impl;
 
 import com.denticheck.api.domain.user.dto.UserRequestDTO;
 import com.denticheck.api.domain.user.dto.UserResponseDTO;
+import com.denticheck.api.domain.user.entity.RoleEntity;
 import com.denticheck.api.domain.user.entity.SocialProviderType;
 import com.denticheck.api.domain.user.entity.UserEntity;
 import com.denticheck.api.domain.user.entity.UserRoleType;
 import com.denticheck.api.domain.user.entity.UserStatusType;
+import com.denticheck.api.domain.user.repository.RoleRepository;
 import com.denticheck.api.domain.user.repository.UserRepository;
 import com.denticheck.api.domain.user.service.UserService;
 import com.denticheck.api.security.jwt.service.impl.JwtServiceImpl;
@@ -29,6 +31,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final JwtServiceImpl jwtServiceImpl;
+    private final RoleRepository roleRepository;
 
     // 회원 정보 수정
     @Transactional
@@ -115,19 +118,26 @@ public class UserServiceImpl implements UserService {
                 })
                 .orElseGet(() -> {
                     // 신규 유저 생성
-                    UserRoleType role = UserRoleType.USER;
+                    String roleName;
                     if (email != null && adminEmails != null && adminEmails.contains(email)) {
-                        role = UserRoleType.ADMIN;
+                        roleName = UserRoleType.ADMIN.name();
+                    } else {
+                        roleName = UserRoleType.USER.name();
                     }
+
+                    String finalRoleName = roleName;
+                    RoleEntity role = roleRepository.findByName(finalRoleName)
+                            .orElseThrow(() -> new RuntimeException("Role not found: " + finalRoleName));
 
                     UserEntity newUser = UserEntity.builder()
                             .username(username)
                             .userStatusType(UserStatusType.ACTIVE)
                             .socialProviderType(providerType)
-                            .roleType(role)
                             .nickname(nickname)
                             .email(email)
+                            .role(role)
                             .build();
+
                     return userRepository.save(newUser);
                 });
     }

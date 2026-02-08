@@ -1,11 +1,8 @@
 package com.denticheck.api.domain.user.service.impl;
 
 import com.denticheck.api.domain.user.dto.CustomOAuth2User;
-
 import com.denticheck.api.domain.user.entity.SocialProviderType;
 import com.denticheck.api.domain.user.entity.UserEntity;
-import com.denticheck.api.domain.user.service.UserService;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -61,7 +58,10 @@ public class CustomOAuth2UserServiceImpl extends DefaultOAuth2UserService {
 
         // 공통 로직으로 유저 생성/조회 (Admin 권한 부여 포함)
         UserEntity user = userServiceImpl.getOrCreateUser(providerType, providerId, email, nickname);
-        String role = "ROLE_" + user.getRoleType().name();
+
+        // TODO: 다중 권한 처리 로직 개선 필요 (현재는 첫 번째 권한만 사용)
+        String roleName = user.getRole() != null ? user.getRole().getName() : "USER";
+        String role = "ROLE_" + roleName;
         String username = user.getUsername();
 
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
