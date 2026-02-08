@@ -12,5 +12,8 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 
     Optional<UserEntity> findByUsername(String username);
 
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = "role")
+    Optional<UserEntity> findWithRoleByUsername(String username);
+
     void deleteByUsername(String username);
 }

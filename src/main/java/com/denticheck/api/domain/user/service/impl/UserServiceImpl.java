@@ -107,7 +107,7 @@ public class UserServiceImpl implements UserService {
             String nickname) {
         String username = providerType.name() + "_" + providerId;
 
-        return userRepository.findByUsername(username)
+        return userRepository.findWithRoleByUsername(username)
                 .map(entity -> {
                     // 기존 유저 정보 업데이트
                     UserRequestDTO dto = new UserRequestDTO();
