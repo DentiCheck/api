@@ -18,7 +18,11 @@ spring:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: false
+    clean-disabled: false
 
   graphql:
     graphiql:
       enabled: true
+
+jwt:
+  temp-access-token: "temp_access_token_for_test"

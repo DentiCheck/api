@@ -21,7 +21,7 @@ public class AiReportEntity extends BaseTimeEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "session_id", nullable = false, unique = true)
-    private AiCheckSessionEntity session;
+    private com.denticheck.api.domain.chatbot.entity.ChatSessionEntity session;
 
     @Column(name = "summary", nullable = false, columnDefinition = "TEXT")
     private String summary;
@@ -31,6 +31,10 @@ public class AiReportEntity extends BaseTimeEntity {
 
     @Column(name = "warnings", columnDefinition = "TEXT")
     private String warnings;
+
+    @Column(name = "language", length = 10)
+    @Builder.Default
+    private String language = "ko";
 
     @Column(name = "disclaimer_version", length = 30)
     private String disclaimerVersion;

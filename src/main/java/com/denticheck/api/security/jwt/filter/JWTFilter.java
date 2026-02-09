@@ -28,8 +28,7 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
+            FilterChain filterChain) throws ServletException, IOException {
 
         String authorization = request.getHeader("Authorization");
 
@@ -44,6 +43,17 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // 토큰 파싱
         String accessToken = authorization.split(" ")[1];
+
+        // TODO: 임시 토큰 처리 (테스트용)
+        if ("temp_access_token_for_test".equals(accessToken)) {
+            Authentication auth = new UsernamePasswordAuthenticationToken(
+                    "temp-user",
+                    null,
+                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
+            SecurityContextHolder.getContext().setAuthentication(auth);
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (jwtUtil.isValid(accessToken, true)) {
             String username = jwtUtil.getUsername(accessToken);

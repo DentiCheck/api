@@ -3,7 +3,6 @@ package com.denticheck.api.graphql.resolver;
 import com.denticheck.api.domain.user.entity.UserEntity;
 import com.denticheck.api.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -15,7 +14,6 @@ public class TestQueryResolver {
 
     private final UserRepository userRepository;
 
-    // ✅ 로그인한 내 정보 조회
     @QueryMapping
     @PreAuthorize("hasRole('USER')")
     public UserEntity me(Authentication authentication) {
